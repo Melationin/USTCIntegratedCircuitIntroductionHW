@@ -106,8 +106,8 @@ log_max = math.log10(max_val)
 c = st.sidebar.slider("Cload(nF)", 0.05, 5.0,2.5,0.05,help="最终的Cload为两个滑动条数据之和")
 c += st.sidebar.slider("Cload(nF)(大量程)", 0.0, 50.0,0.0,0.5,help="最终的Cload为两个滑动条数据之和")
 time = st.sidebar.slider("模拟时长(ms)", 1.0, 10.0, 3.0, 0.1)
-NMOSW = st.sidebar.slider("NMOS宽长(ns)", 1.0, 500.0, 250.0, 0.1)
-PMOSW = st.sidebar.slider("PMOS宽长(ns)", 1.0, 500.0, 250.0, 0.1)
+NMOSW = st.sidebar.slider("NMOS宽长(nm)", 1.0, 500.0, 250.0, 0.1)
+PMOSW = st.sidebar.slider("PMOS宽长(nm)", 1.0, 500.0, 250.0, 0.1)
 
 
 
@@ -119,7 +119,7 @@ with st.container():
 -	搭建CMOS Inverter并验证器反向功能
 -	使用脉冲信号输入，扫描$V_{in}→ V_{out}$
 -	在反相器输出端添加负载电容$C_{load}$，调节电容大小，观察不同电容大小对输出跳变时间快慢的影响
--	修改Most宽长，再次观察上升时间和下降时间的变化
+-	修改MOSFET宽长，再次观察上升时间和下降时间的变化
 
     
     
@@ -128,7 +128,7 @@ with st.container():
     st.header("1.搭建CMOS inverter 电路图")
     st.image("Draft7.png",caption="CMOS inverter 电路图")
     st.markdown('''
-    &emsp;&emsp;上图是使用LTSPICE 搭建的电路图。 电路采用 $V_{CC} = 5\\text{V}$ 供电，作为逻辑高电平。输入端 $V_{in}$ 接入频率为 $1\\text{kHz}$ 的脉冲方波信号。上方 PMOS $M2$ 的源极接 $V_{CC}$，下方 NMOS $M1$ 的源极接地，两管的栅极相连作为输入 $V_{in}$ 。$M1$ 和 $M2$ 的漏极连接在一起，作为输出 $V_{out}$。输出端 $V_{out}$ 带有接地的电容负载 $C_L(图中为C1)$。
+    &emsp;&emsp;上图是使用LTSPICE 搭建的电路图。 电路采用 $V_{DD} = 5\\text{V}$ 供电，作为逻辑高电平。输入端 $V_{in}$ 接入频率为 $1\\text{kHz}$ 的脉冲方波信号。上方 PMOS $M2$ 的源极接 $V_{CC}$，下方 NMOS $M1$ 的源极接地，两管的栅极相连作为输入 $V_{in}$ 。$M1$ 和 $M2$ 的漏极连接在一起，作为输出 $V_{out}$。输出端 $V_{out}$ 带有接地的电容负载 $C_L(图中为C1)$。
     ''',unsafe_allow_html=True)
     imageMode = st.toggle("信号输入模式",help="高电平/低电平")
     if imageMode:
@@ -136,7 +136,7 @@ with st.container():
     else:
         st.image("F1.png",caption="CMOS inverter 示意图(Vin为低电平)")
     st.markdown('''
-    &emsp;&emsp;当输入为低电平时, PMOS 导通、VCC接通到输出Vout, 为高电平；输入为高电平时 NMOS 导通、VDD接通到输出Vout,为低电平。
+    &emsp;&emsp;当输入为低电平时, PMOS 导通、$V_{DD}$接通到输出$V_{out}$, 为高电平；输入为高电平时 NMOS 导通、$V_{SS}$接通到输出$V_{out}$,为低电平。
     ''')
     st.header("2.仿真与数据处理")
     st.markdown("&emsp;&emsp;由于原版LTSPICE的自动化功能相对偏弱，为了更好的分析和展示数据，使用PyLTSpice库，在python中导入LTSPICE生成的.net文件，进行批量仿真，同时利用python进行数据处理。")
@@ -169,11 +169,11 @@ with st.container():
     drawNMOSW()
     st.markdown('''
     &emsp;&emsp;实验数据显示：增大 MOSFET 宽度，上升/下降时间明显变短。这是因为通道电阻降低。\n
-    &emsp;&emsp;其中通电电阻满足
+    &emsp;&emsp;其中通道电阻满足
     $$
     R_{on} \\propto \\frac{L}{μ C_{ox}W(V_{GS}-V_{th})} 
     $$
-    &emsp;&emsp;即通电电阻 与MOSFET宽度呈反比。结合RC电路充放电时间，可知理论分析符合实验数据。再由电容不变的情况下，上升/下降时间与电阻成正比，可知上升/下降时间与MOS宽度呈反比，符合实验数据。
+    &emsp;&emsp;即通道电阻 与MOSFET宽度呈反比。结合RC电路充放电时间，可知理论分析符合实验数据。再由电容不变的情况下，上升/下降时间与电阻成正比，可知上升/下降时间与MOS宽度呈反比，符合实验数据。
     ''')
 
     st.markdown("&emsp;&emsp;同时，结合实验数据，可以得出上升时间只与PMOS宽长有关，下降时间也只与NMOS宽长有关，与电路分析吻合。")
